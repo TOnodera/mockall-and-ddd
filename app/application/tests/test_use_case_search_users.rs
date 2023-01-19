@@ -1,48 +1,33 @@
 use application::UseCase;
 use domain::{
-    EmailAddress, MyResult, Repositories, User, UserFirstName, UserLastName, UserRepository,
+    EmailAddress, MockUserRepository, MyResult, Repositories, User, UserFirstName, UserLastName,
+    UserRepository,
 };
 
-/**
-// 愚直にやろうとするとこんな感じになる
-// START 愚直
-pub struct EmptyUserRepository;
-
-impl UserRepository for EmptyUserRepository {
-    fn list(&self) -> Vec<User> {
-        vec![]
-    }
-
-    fn create(&self, user: User) -> MyResult<()> {
-        unimplemented!()
-    }
-
-    fn update(&self, user: User) -> MyResult<()> {
-        unimplemented!()
-    }
+// MockAllで実装
+pub struct TestRepositories {
+    user_repo: MockUserRepository,
 }
-pub struct EmptyRepositories {
-    user_repo: EmptyUserRepository,
-}
-impl Repositories for EmptyRepositories {
-    type UserRepo = EmptyUserRepository;
+impl Repositories for TestRepositories {
+    type UserRepo = MockUserRepository;
 
     fn user_repository(&self) -> &Self::UserRepo {
         &self.user_repo
     }
 }
-impl EmptyRepositories {
-    pub fn new(user_repo: EmptyUserRepository) -> Self {
+impl TestRepositories {
+    pub fn new(user_repo: MockUserRepository) -> Self {
         Self { user_repo }
     }
 }
-// END 愚直
-*/
 
 #[test]
 fn test_with_blank_repository() {
-    let user_repo = EmptyUserRepository;
-    let repositories = EmptyRepositories::new(user_repo);
+    let mut user_repo = MockUserRepository::new();
+    // mockのlist()をクロージャで差し替える
+    user_repo.expect_list().returning(|| vec![]);
+
+    let repositories = TestRepositories::new(user_repo);
     let use_case = UseCase::new(&repositories);
 
     assert_eq!(use_case.search_users(None, None, None), vec![]);

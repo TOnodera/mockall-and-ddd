@@ -9,6 +9,6 @@ pub use repositories::Repositories;
 pub use user::{
     user_id::UserId,
     user_name::{user_first_name::UserFirstName, user_last_name::UserLastName, UserName},
-    user_repository::UserRepository,
+    user_repository::{MockUserRepository, UserRepository},
     User,
 };
