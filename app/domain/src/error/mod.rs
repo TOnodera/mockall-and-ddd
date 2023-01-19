@@ -7,23 +7,23 @@ use crate::error::error_type::MyErrorType;
 pub type MyResult<T> = Result<T, MyError>;
 
 #[derive(Debug)]
-pub struct MyError{
+pub struct MyError {
     typ: MyErrorType,
     desc: String,
 }
 
 impl MyError {
-    pub fn new(typ: MyErrorType, desc: impl ToString) -> Self{
-        Self{
+    pub fn new(typ: MyErrorType, desc: impl ToString) -> Self {
+        Self {
             typ,
-            desc: desc.to_string()
+            desc: desc.to_string(),
         }
     }
 }
 
-impl Error for MyError{}
+impl Error for MyError {}
 
-impl Display for MyError{
+impl Display for MyError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{:?} {}", self.typ, self.desc)
     }
