@@ -34,3 +34,7 @@ impl Display for UserName {
         write!(f, "{} {}", self.first_name, self.last_name)
     }
 }
+
+pub fn name_eq(a: &str, b: &str) -> bool {
+    a.to_lowercase() == b.to_lowercase()
+}

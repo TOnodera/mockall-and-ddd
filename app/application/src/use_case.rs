@@ -10,7 +10,6 @@ where
 {
     user_repo: &'r R::UserRepo,
 }
-
 impl<'r, R> UseCase<'r, R>
 where
     R: Repositories,
@@ -27,21 +26,20 @@ where
         last_name: Option<&UserLastName>,
         email: Option<&EmailAddress>,
     ) -> Vec<User> {
+        if first_name == None && last_name == None && email == None {
+            return vec![];
+        }
         let users = self.user_repo.list();
         let users = users
             .into_iter()
             .filter(|user| {
-                if let Some(first_name) = first_name {
-                    return first_name == user.name().first_name();
-                }
-                if let Some(last_name) = last_name {
-                    return last_name == user.name().last_name();
-                }
-                if let Some(email) = email {
-                    return email == user.email();
-                }
-                // どれにも当てはまらない場合はfalse
-                false
+                first_name
+                    .map(|f_name| user.name().first_name().eq(f_name))
+                    .unwrap_or_else(|| true)
+                    && last_name
+                        .map(|l_name| user.name().last_name().eq(l_name))
+                        .unwrap_or_else(|| true)
+                    && email.map(|em| em == user.email()).unwrap_or_else(|| true)
             })
             .collect();
         users
