@@ -27,7 +27,24 @@ where
         last_name: Option<&UserLastName>,
         email: Option<&EmailAddress>,
     ) -> Vec<User> {
-        todo!()
+        let users = self.user_repo.list();
+        let users = users
+            .into_iter()
+            .filter(|user| {
+                if let Some(first_name) = first_name {
+                    return first_name == user.name().first_name();
+                }
+                if let Some(last_name) = last_name {
+                    return last_name == user.name().last_name();
+                }
+                if let Some(email) = email {
+                    return email == user.email();
+                }
+                // どれにも当てはまらない場合はfalse
+                false
+            })
+            .collect();
+        users
     }
 
     pub fn add_user(&self, user: User) -> MyResult<()> {
